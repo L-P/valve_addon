@@ -1,65 +1,13 @@
 #!/usr/bin/env sh
+
 set -eux
 
-mod="$(basename "$(realpath --canonicalize-existing "$(dirname "$0")/..")")"
-mapname="$(basename "${1%.*}")"
 mapsrc="$(realpath --canonicalize-existing "$1")" # original .map file to export
-map="$mod/maps/$mapname.map" # exported .map to actually compile
-bsp="$mod/maps/$mapname.bsp"
-opts="-noestimate -threads $(nproc)" # opts for all compile tools
+bsp="$2"
+map="$(mktemp --suffix .map)" # exported .map to actually compile
 hldir="$(realpath --canonicalize-existing "$(dirname "$0")"/../..)"
 
-fast=0
-ent=0
-if [ $# -gt 1 ]; then
-    case "$2" in
-        -fast)
-            fast=1
-            ;;
-        -ent)
-            ent=1
-            ;;
-    esac
-fi
-
-( # preserve cwd
-# Ensure we're in the real HL parent directory for this as compile tools look
-# for WADs relative to this path.
-cd "$hldir"
 goldutil map-export -cleanup-tb "$mapsrc" > "$map"
-
-grep -q __TB_empty "$map" && (
-    echo "__TB_empty found in $map" 1>&2
-    sed -i 's/__TB_empty/missing/' "$map"
-)
-
-if [ $ent -eq 1 ]; then
-    sdHLCSG -onlyents "$map"
-    return
-fi
-
-# Ensure we're not working and stale data and that an error won't be missed
-# because of an old file being loaded.
-rm -f -- "$bsp"
-
-radopts="-chop 32 -texchop 16 -bounce 8 -limiter 220"
-radoptsfile="${mapsrc%.*}.radopts"
-if [ -r "$radoptsfile" ]; then
-    radopts="$(cat "$radoptsfile")"
-fi
-
-# Intentional word-splitting on ${rad,}opts.
-# shellcheck disable=SC2086
-(
-sdHLCSG $opts -clipeconomy -cliptype precise "$map"
-sdHLBSP $opts "$map"
-
-if [ $fast -eq 1 ]; then
-    sdHLVIS $opts -fast "$map"
-    sdHLRAD -chart $opts -fast "$map"
-else
-    sdHLVIS $opts -full "$map"
-    sdHLRAD -chart $opts $radopts "$map"
-fi
-)
-)
+qbsp -leaktest -hlbsp -wadpath "$hldir" "$map" "$bsp"
+vis "$bsp"
+light -bouncestyled -bounce -dirt -bouncecolorscale 1 "$bsp"
