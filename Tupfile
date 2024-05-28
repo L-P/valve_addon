@@ -1,0 +1,1 @@
+: wadsrc/ericw/*.png |> goldutil wad-create -out %o wadsrc/ericw |> ericw.wad
