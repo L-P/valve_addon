@@ -3,7 +3,7 @@
 // entity 0
 {
 "mapversion" "220"
-"wad" "valve_addon/devtextures.wad;valve_addon/sdhlt.wad;valve/halflife.wad"
+"wad" "valve/halflife.wad;valve_addon/devtextures.wad;valve_addon/ericw.wad"
 "classname" "worldspawn"
 "_tb_mod" "valve_addon"
 "_tb_def" "external:valve_addon/addon.fgd"
