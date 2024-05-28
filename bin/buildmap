@@ -2,12 +2,13 @@
 
 set -eux
 
-mapsrc="$(realpath --canonicalize-existing "$1")" # original .map file to export
+map="$1"
 bsp="$2"
-map="$(mktemp --suffix .map)" # exported .map to actually compile
-hldir="$(realpath --canonicalize-existing "$(dirname "$0")"/../..)"
 
-goldutil map-export -cleanup-tb "$mapsrc" > "$map"
-qbsp -leaktest -hlbsp -wadpath "$hldir" "$map" "$bsp"
+exported="$(mktemp --suffix .map)"
+hldir="$(realpath "$(dirname "$0")"/../..)"
+
+goldutil map-export -cleanup-tb "$map" > "$exported"
+qbsp -leaktest -hlbsp -wadpath "$hldir" "$exported" "$bsp"
 vis "$bsp"
 light "$bsp"
