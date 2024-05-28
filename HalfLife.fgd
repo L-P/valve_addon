@@ -30,12 +30,11 @@
 // worldspawn
 //
 
-@SolidClass = worldspawn : "World entity"
+@BaseClass = BaseWorldspawn
 [
 	message(string) : "Map Description / Title"
 	skyname(string) : "environment map (cl_skyname)"
 	sounds(integer) : "CD track to play" : 1
-	light(integer) : "Default light level"
 	WaveHeight(string) : "Default Wave Height"
 	MaxRange(string) : "Max viewable distance" : "4096"
 	chaptertitle(string) : "Chapter Title Message"
@@ -1697,16 +1696,6 @@
 	[
 		1 : "Short Logon" : 0
 	]
-]
-
-//
-// lights
-//
-
-@PointClass base(Targetname, Angles, ZHLT_point) iconsprite("sprites/lightbulb.spr") = light_environment : "Environment" 
-[
-	pitch(integer) : "Pitch" : 0
-	_light(color255) : "Brightness" : "255 255 128 200"
 ]
 
 @SolidClass base(Door, ZHLT) = momentary_door : "Momentary/Continuous door" 

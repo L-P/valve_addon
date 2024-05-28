@@ -6,9 +6,74 @@
 // License GPLv2+: GNU GPL version 2 or later
 // <http://gnu.org/licenses/gpl2.html>.
 
-@PointClass base() = light
+@SolidClass base(BaseWorldspawn) = worldspawn
 [
-    _anglescale(float) : "Angle of incidence scaling" : : "Specifies the angle in degrees for an inner spotlight cone (must be less than the 'angle' cone. Creates a softer transition between the full brightness of the inner cone to the edge of the outer cone."
+    _minlight(integer) : "Minimum light brightness" : : "Set a global minimum light level of 'n' across the whole map. This is an easy way to eliminate completely dark areas of the level, however you may lose some contrast as a result, so use with care. Default 0."
+    _minlight_color(Color) : "Minimum light color" : : "Specify red(r), green(g) and blue(b) components for the colour of the minlight. RGB component values are between 0 and 255 (between 0 and 1 is also accepted). Default is white light ('255 255 255')."
+    _dist(integer) : "Light fade distance scale" : : "Scales the fade distance of all lights by a factor of n. If n > 1 lights fade more quickly with distance and if n < 1, lights fade more slowly with distance and light reaches further."
+    _range(float) : "Light range brightness scale" : : "Scales the brightness range of all lights without affecting their fade distance. Values of n > 0.5 makes lights brighter and n < 0.5 makes lights less bright. The same effect can be achieved on individual lights by adjusting both the 'light' and 'wait' attributes."
+    _sunlight(integer) : "Sun brightness" : : "Set the brightness of the sunlight coming from an unseen sun in the sky. Sky brushes (or more accurately bsp leafs with sky contents) will emit sunlight at an angle specified by the '_sun_mangle' key. Default 0."
+    _anglescale(float) : "Sunlight angle of incidence scaling" : : "Set the scaling of sunlight brightness due to the angle of incidence with a surface (more detailed explanation in the '_anglescale' light entity key below)."
+    _sunlight_mangle(string) : "Sun angles" : : "Specifies the direction of sunlight using yaw, pitch and roll in degrees. Yaw specifies the angle around the Z-axis from 0 to 359 degrees and pitch specifies the angle from 90 (shining straight up) to -90 (shining straight down from above). Roll has no effect, so use any value (e.g. 0). Default is straight down ('0 -90 0')."
+    _sunlight_penumbra(integer) : "Sunlight penumbra" : : "Specifies the penumbra width, in degrees, of sunlight. Useful values are 3-4 for a gentle soft edge, or 10-20+ for more diffuse sunlight. Default is 0."
+    _sunlight_color(Color) : "Sunlight color" : : "Specify red(r), green(g) and blue(b) components for the colour of the sunlight. RGB component values are between 0 and 255 (between 0 and 1 is also accepted). Default is white light ('255 255 255')."
+    _sunlight2(integer) : "Sun ambiant brightness" : : "Set the brightness of a dome of lights arranged around the upper hemisphere. (i.e. ambient light, coming from above the horizon). Default 0."
+    _sunlight2_color(Color) : "Sunlight ambiant color" : : "Specifies the colour of _sunlight2, same format as '_sunlight_color'. Default is white light ('255 255 255')."
+    _sunlight3(integer) : "Sun below horizon ambiant brightness" : : "Same as '_sunlight2', but for the bottom hemisphere (i.e. ambient light, coming from below the horizon). Combine '_sunlight2' and '_sunlight3' to have light coming equally from all directions, e.g. for levels floating in the clouds. Default 0."
+    _sunlight3_color(Color) : "Sun below horizon ambiant color" : : "Specifies the colour of _sunlight3, same format as '_sunlight_color'. Default is white light ('255 255 255')."
+    _dirt(Choices) : "Ambiant occlusion" : : "1 enables dirtmapping (ambient occlusion) on all lights, borrowed from q3map2. This adds shadows to corners and crevices. You can override the global setting for specific lights with the '_dirt' light entitiy key or '_sunlight_dirt', '_sunlight2_dirt', and '_minlight_dirt' worldspawn keys. Default is no dirtmapping (-1)." =
+    [
+        -1 : "No"
+        1 : "Yes"
+    ]
+    _sunlight_dirt(Choices) : "Sun ambiant occlusion" : : "1 enables dirtmapping (ambient occlusion) on sunlight, -1 to disable (making it illuminate the dirtmapping shadows). Default is to use the value of '_dirt'." =
+    [
+        -1 : "No"
+        1 : "Yes"
+    ]
+    _sunlight2_dirt(Choices) : "Sun ambiant, ambiant occlusion" : : "1 enables dirtmapping (ambient occlusion) on sunlight2/3, -1 to disable. Default is to use the value of '_dirt'." =
+    [
+        -1 : "No"
+        1 : "Yes"
+    ]
+    _minlight_dirt(Choices) : "Minimum light ambiant occlusion" : : "1 enables dirtmapping (ambient occlusion) on minlight, -1 to disable. Default is to use the value of '_dirt'." =
+    [
+        -1 : "No"
+        1 : "Yes"
+    ]
+    _dirtmode(Choices) : "Ambiant occlusion mode" =
+    [
+        0 : "Ordered (default)"
+        1 : "Randomized"
+    ]
+    _dirtdepth(integer) : "Ambiant occlusion depth" : : "Maximum depth of occlusion checking for dirtmapping, default 128."
+    _dirtscale(float) : "Ambiant occlusion scale" : : "Scale factor used in dirt calculations, default 1. Lower values (e.g. 0.5) make the dirt fainter, 2.0 would create much darker shadows."
+    _dirtgain(float) : "Ambiant occlusion gain" : : "Exponent used in dirt calculation, default 1. Lower values (e.g. 0.5) make the shadows darker and stretch further away from corners."
+    _dirtangle(integer) : "Ambiant occlusion angle" : : "Cone angle in degrees for occlusion testing, default 88. Allowed range 1-90. Lower values can avoid unwanted dirt on arches, pipe interiors, etc."
+    _gamma(integer) : "Gamma" : : "Adjust brightness of final lightmap. Default 1, >1 is brighter, <1 is darker."
+    _lightmap_scale(integer) : "Lightmap scale" : : "Forces all surfaces+submodels to use this specific lightmap scale. Removes 'LMSHIFT' BSP field."
+    _bounce(Choices) : "Bounce lighting" =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _bouncescale(float) : "Bounce scale" : : "Scales brightness of bounce lighting, default 1."
+    _bouncecolorscale(float) : "Bounce color scale" : : "Weight for bounce lighting to use texture colors from the map: 0=ignore map textures (default), 1=multiply bounce light color by texture color."
+    _bouncestyled(Choices) : "Bounce styled lights" : : "1 makes styled lights bounce (e.g. flickering or switchable lights), default is 0, they do not bounce." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _spotlightautofalloff(Choices) : "Spotlight auto-falloff" : : "When set to 1, spotlight falloff is calculated from the distance to the targeted info_null. Ignored when '_falloff' is not 0. Default 0." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+]
+
+@BaseClass = BaseLight
+[
+    _anglescale(float) : "Angle of incidence scaling" : : "Sets a scaling factor for how much influence the angle of incidence of light on a surface has on the brightness of the surface. n must be between 0.0 and 1.0. Smaller values mean less attenuation, with zero meaning that angle of incidence has no effect at all on the brightness."
     _bouncescale(float) : "Bounce scale" : : "Scales the amount of light that is contributed by bounces. 0.0 disables bounce lighting for this light."
     _color(Color) : "Color" : "255 255 255" : "Specify red(r), green(g) and blue(b) components for the colour of the light. RGB component values are between 0 and 255 (between 0 and 1 is also accepted)."
     _deviance(integer) : "Deviance" : : "Overrides the worldspawn setting of '_dirt' for this particular light. -1 to disable dirtmapping (ambient occlusion) for this light, making it illuminate the dirtmapping shadows. 1 to enable ambient occlusion for this light. Default is to defer to the worldspawn setting."
@@ -20,32 +85,10 @@
 In this mode, 'wait' is ignored and 'light' only controls the brightness at the center of the light, and no longer affects the falloff distance.
 
 Only supported on linear attenuation (delay 0) lights currently."
-    _project_fov(integer) : "Project FOV" : : "Specifies the fov angle for a texture projection."
-    _project_mangle(string) : "Project angles" : : "Specifies the yaw/pitch/roll angles for a texture projection (overriding mangle)."
-    _project_texture(string) : "Project texture" : : "Specifies that a light should project this texture. The texture must be used in the map somewhere."
     _samples(integer) : "Deviance samples" : : "Number of lights to use for '_deviance'. Only used if '_deviance' is set."
-    _softangle(integer) : "Inner cone" : 75 : "Specifies the angle in degrees for an inner spotlight cone (must be less than the 'angle' cone. Creates a softer transition between the full brightness of the inner cone to the edge of the outer cone."
-    _sun(Choices) : "Is sun" : 0 : "Set to 1 to make this entity a sun, as an alternative to using the sunlight worldspawn keys. If the light targets an info_null entity, the direction towards that entity sets sun direction. The light itself is disabled, so it can be placed anywhere in the map.
-
-The following light properties correspond to these sunlight settings:
-light => _sunlight
-mangle => _sunlight_mangle
-deviance => _sunlight_penumbra
-_color => _sunlight_color
-_dirt => _sunlight_dirt
-_anglescale => _anglescale" =
+    delay(Choices) : "Attenuation formula" : 2 =
     [
-        0 : "No"
-        1 : "Yes"
-    ]
-    _surface(string) : "Surface texture" : : "Makes surfaces with the given texture name emit light, by using this light as a template which is copied across those surfaces. Lights are spaced about 128 units (though possibly closer due to bsp splitting) apart and positioned 2 units above the surfaces."
-    _surface_offset(integer) : "Surface offset" : : "Controls the offset lights are placed above surfaces for '_surface'. Default 2."
-    _surface_spotlight(integer) : "Surface spotlight" : : "For a surface light template (i.e. a light with '_surface' set), setting this to '1' makes each instance into a spotlight, with the direction of light pointing along the surface normal. In other words, it automatically sets 'mangle' on each of the generated lights."
-
-    angle(integer) : "Outer cone" : 90 : "Specifies the angle in degrees for a spotlight cone."
-    delay(Choices) : "Attenuation formula" : 0 =
-    [
-        0 : "Linear attenuation"
+        0 : "Linear attenuation (default)"
         1 : "1/x attenuation"
         2 : "1/(x^2) attenuation"
         3 : "No attenuation (same brightness at any distance)"
@@ -53,8 +96,6 @@ _anglescale => _anglescale" =
         5 : "1/(x^2) attenuation, but slightly more attenuated and without the extra bright effect that 'delay 2' has near the source."
     ]
     light(integer) : "Brightness" : 300 : "Set the light intensity. Negative values are also allowed and will cause the entity to subtract light cast by other entities."
-    mangle(string) : "Angles" : "0 -90 0" : "Turns the light into a spotlight and specifies the direction of light using yaw, pitch and roll in degrees. Yaw specifies the angle around the Z-axis from 0 to 359 degrees and pitch specifies the angle from 90 (straight up) to -90 (straight down). Roll has no effect, so use any value (e.g. 0). Often easier than the 'target' method."
-    target(target_destination) : "Target" : : "Turns the light into a spotlight, with the direction of light being towards another entity with it’s 'targetname' key set to 'name'."
     targetname(target_source) : "Name" : : "Turns the light into a switchable light, toggled by another entity targeting it’s name."
     wait(float) : "Fade distance" : "1" : "Scale the fade distance of the light by 'n'. Values of n > 1 make the light fade more quickly with distance, and values < 1 make the light fade more slowly (and thus reach further)."
 
@@ -74,4 +115,130 @@ _anglescale => _anglescale" =
         4 : "Fast strobe"
         9 : "Slow strobe"
     ]
+]
+
+// The following keys can be used on any entity with a brush model.
+// "_minlight", "_mincolor", "_dirt", "_phong", "_phong_angle",
+// "_phong_angle_concave", "_shadow" are supported on func_detail/func_group as
+// well, if qbsp from these tools is used.
+@BaseClass = WorldLighting
+[
+    _minlight(integer) : "Minimum light brightness" : : "Set the minimum light level for any surface of the brush model. Default 0."
+    _minlight_exclude(string) : "Minlight exclude texture" : : "Faces with the given texture are excluded from receiving minlight on this brush model."
+    _minlight_color(Color) : "Minimum light color" : : "Specify red(r), green(g) and blue(b) components for the colour of the minlight. RGB component values are between 0 and 255 (between 0 and 1 is also accepted). Default is white light ('255 255 255')."
+    _shadow(Choices) : "Cast shadow" : 1 : "If n is 1, this model will cast shadows on other models and itself (i.e. '_shadow' implies '_shadowself'). Note that this doesn’t magically give Quake dynamic lighting powers, so the shadows will not move if the model moves. Set to -1 on func_detail/func_group to prevent them from casting shadows. Default 0." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _dirt(Choices) : "Ambiant occlusion" : : "-1 prevents dirtmapping on the brush model. Useful it the bmodel touches or sticks into the world, and you want to those ares from turning black. Default 0." = 
+    [
+        -1 : "Force disable"
+        0 : "Use global defaults"
+    ]
+    _phong(Choices) : "Phong shading" : :  "1 enables phong shading on this model with a default _phong_angle of 89 (softens columns etc)." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _phong_angle(integer) : "Phong angle" : : "Enables phong shading on faces of this model with a custom angle. Adjacent faces with normals this many degrees apart (or less) will be smoothed. Consider setting '_anglescale' to '1' on lights or worldspawn to make the effect of phong shading more visible. Use the '-phongdebug' command-line flag to save the interpolated normals to the lightmap for previewing (use 'r_lightmap 1' or 'gl_lightmaps 1' in your engine to preview.)"
+    _phong_angle_concave(integer) : "Phong concave angle" : : "Optional key for setting a different angle threshold for concave joints. A pair of faces will either use '_phong_angle' or '_phong_angle_concave' as the smoothing threshold, depending on whether the joint between the faces is concave or not. '_phong_angle(_concave)' is the maximum angle (in degrees) between the face normals that will still cause the pair of faces to be smoothed. The minimum setting for '_phong_angle_concave' is 1, this should make all concave joints non-smoothed (unless they’re less than 1 degree apart, almost a flat plane.) If it’s 0 or unset, the same value as '_phong_angle' is used."
+]
+
+@BaseClass = ModelBrushLighting
+[
+    _shadowself(Choices) : "Self shadow" : :  "If n is 1, this model will cast shadows on itself if one part of the model blocks the light from another model surface. This can be a better compromise for moving models than full shadowing. Default 0." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _shadowworldonly(Choices) : "Shadow world only" : :  "If n is 1, this model will cast shadows on the world only (not other bmodels)." =
+    [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _switchableshadow(Choices) : "Switchable shadow" : :  "If n is 1, this model casts a shadow that can be switched on/off using QuakeC. To make this work, a lightstyle is automatically assigned and stored in a key called 'switchshadstyle', which the QuakeC will need to read and call the 'lightstyle()' builtin with 'a' or 'm' to switch the shadow on or off. Entities sharing the same targetname, and with '_switchableshadow' set to 1, will share the same lightstyle." = [
+        0 : "Disable"
+        1 : "Enable"
+    ]
+    _lightignore(Choices) : "Ignore lights" : :  "1 makes a model receive minlight only, ignoring all lights / sunlight. Could be useful on rotators / trains." =
+    [
+        0 : "No"
+        1 : "Yes"
+    ]
+]
+
+@PointClass base(BaseLight) = light
+[
+]
+
+@PointClass base(BaseLight) = light_spot
+[
+    mangle(string) : "Angles" : "0 -90 0" : "Turns the light into a spotlight and specifies the direction of light using yaw, pitch and roll in degrees. Yaw specifies the angle around the Z-axis from 0 to 359 degrees and pitch specifies the angle from 90 (straight up) to -90 (straight down). Roll has no effect, so use any value (e.g. 0). Often easier than the 'target' method."
+    angle(integer) : "Outer cone" : 90 : "Specifies the angle in degrees for a spotlight cone."
+    _softangle(integer) : "Inner cone" : 75 : "Specifies the angle in degrees for an inner spotlight cone (must be less than the 'angle' cone. Creates a softer transition between the full brightness of the inner cone to the edge of the outer cone."
+    _project_fov(integer) : "Project FOV" : : "Specifies the fov angle for a texture projection."
+    _project_mangle(string) : "Project angles" : : "Specifies the yaw/pitch/roll angles for a texture projection (overriding mangle)."
+    _project_texture(string) : "Project texture" : : "Specifies that a light should project this texture. The texture must be used in the map somewhere."
+    target(target_destination) : "Target" : : "Turns the light into a spotlight, with the direction of light being towards another entity with it’s 'targetname' key set to 'name'."
+]
+
+@PointClass base(BaseLight) = light_surface
+[
+    _surface_spotlight(integer) : "Surface spotlight" : : "For a surface light template (i.e. a light with '_surface' set), setting this to '1' makes each instance into a spotlight, with the direction of light pointing along the surface normal. In other words, it automatically sets 'mangle' on each of the generated lights."
+    _surface(string) : "Surface texture" : : "Makes surfaces with the given texture name emit light, by using this light as a template which is copied across those surfaces. Lights are spaced about 128 units (though possibly closer due to bsp splitting) apart and positioned 2 units above the surfaces."
+    _surface_offset(integer) : "Surface offset" : : "Controls the offset lights are placed above surfaces for '_surface'. Default 2."
+]
+
+@PointClass base(BaseLight) = light_environment
+[
+    _sun(Choices) : "Is sun" : 1 : "Set to 1 to make this entity a sun, as an alternative to using the sunlight worldspawn keys. The light itself is disabled, so it can be placed anywhere in the map.
+
+The following light properties correspond to these sunlight settings:
+light => _sunlight
+mangle => _sunlight_mangle
+deviance => _sunlight_penumbra
+_color => _sunlight_color
+_dirt => _sunlight_dirt
+_anglescale => _anglescale" =
+    [
+        0 : "No"
+        1 : "Yes"
+    ]
+    target(target_destination) : "Target" : : "If the light targets an info_null entity, the direction towards that entity sets sun direction."
+]
+
+@SolidClass base(WorldLighting) = func_group : "Editor/Lighting group"
+[
+]
+
+@SolidClass base(WorldLighting) = func_detail : "Detail brushes add visual details to the world, but do not block VISibility. func_detail entities are merged into the worldspawn entity by the qbsp compiler and do not appear as separate entities in the compiled bsp."
+[
+]
+
+@SolidClass base(WorldLighting) = func_detail_illusionary : "func_detail variant with no collision (players / monsters / gunfire) and doesn’t split world faces. Doesn’t cast shadows unless enabled with '_shadow' '1'. Useful for hanging vines. Still creates BSP leafs, which is unavoidable without a new .bsp file format."
+[
+]
+
+@SolidClass base(WorldLighting) = func_detail_wall : "func_detail variant that doesn’t split world faces. Useful for when you want a decoration touching a floor or wall to not split the floor/wall faces (you’ll get some overdraw instead.) If it completely covers up a world face, that face will get clipped away, so it’s not suitable for fence textures; see func_detail_fence instead."
+[
+]
+
+@SolidClass base(WorldLighting) = func_detail_fence : "Similar to func_detail_wall except it’s suitable for fence textures, never clips away world faces. Useful for fences, grates, etc., that are solid and block gunfire."
+[
+]
+
+@SolidClass base(WorldLighting) = func_illusionary_visblocker : "For creating vis-blocking illusionary brushes (similar to 'func_detail_illusionary' or 'func_illusionary'. The player can walk through them.) This gives the same effect as water brushes when the '-notranswater' flag is used, except the interior of these brushes are saved as CONTENTS_EMPTY. One thing to be aware of is, if the player’s view is very close to the faces of these brushes, they might be able to see into the void (depending on the engine). Fitzquake family engines have a workaround for this that is enabled if the brushes are textured with a water texture ('*' prefix)."
+[
+]
+
+@PointClass = misc_external_map : "Each 'misc_external_map' imports brushes from an external .map file, applies rotations specified by the '_external_map_angles' key, then translates them to the 'origin' key of the 'misc_external_map' entity. Finally, the classname of the 'misc_external_map' is switched to the one provided by the mapper in the '_external_map_classname' key. (The 'origin' key is also cleared to '0 0 0' before saving the .bsp).
+The external .map file should consist of worldspawn brushes only, although you can use func_group for editing convenience. Brush entities are merged with the worldspawn brushes during import. All worldspawn keys, and any point entities are ignored. Currently, this means that the 'wad' key is not handled, so you need to add any texture wads required by the external .map file to your main map.
+Note that you can set other entity keys on the 'misc_external_map' to configure the final entity type. e.g. if you set '_external_map_classname' to 'func_door', you can also set a 'targetname' key on the 'misc_external_map', or any other keys for 'func_door'."
+[
+    _external_map(string) : "Filename" : : "Specifies the filename of the .map to import."
+    _external_map_classname(string) : "Classname" : : "What entity you want the external map to turn in to. You can use internal qbsp entity types such as 'func_detail', or a regular bmodel classname like 'func_wall' or 'func_door'."
+    _external_map_angles(string) : "Angles" : "0 0 0" : "Rotation for the prefab, 'pitch yaw roll' format. Negative pitch is down."
+    _external_map_angle(integer) : "Yaw" : : "Short version of '_external_map_angles' for when you want to specify just a yaw rotation."
+    _external_map_scale(string) : "Scale" : : "Scale factor for the prefab, defaults to 1. Either specify a single value or three scales, 'x y z'."
 ]
