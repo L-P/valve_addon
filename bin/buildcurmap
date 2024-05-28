@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+set -eux
+
+(
+cd "$(realpath "$(dirname "$0")/..")"
+
+latest="$(find mapssrc -maxdepth 1 -type f -name '*.map' -printf "%T+ %p\n" | grep -Ev '(.exported.map|.inc.map)' | sort -r | head -n1 | cut -d' ' -f2)"
+name="${latest%.*}"
+name="${name#mapssrc/}"
+
+bin/buildmap "$@" "$latest" "maps/$name.bsp"
+bin/run +map "$name"
+)
