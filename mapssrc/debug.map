@@ -158,7 +158,7 @@
 "classname" "misc_external_map"
 "_external_map_angles" "0 0 0"
 "origin" "168 104 -72"
-"_external_map" "mapssrc/debug_include.map"
+"_external_map" "../mapssrc/debug.inc.map"
 "_external_map_classname" "func_detail"
 }
 // entity 7
