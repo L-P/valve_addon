@@ -5,10 +5,14 @@ set -eux
 map="$1"
 bsp="$2"
 
-exported="$(mktemp --suffix .map)"
+# File suffixes and paths are fragile, there's some bad interactions between
+# tup and qbsp to avoid in order to get map includes to work.
+# I don't know how qbsp knows that included maps are in the mapssrc directory but it works.
+exported="$1.exported.map"
 hldir="$(realpath "$(dirname "$0")"/../..)"
 
 goldutil map-export -cleanup-tb "$map" > "$exported"
 qbsp -leaktest -hlbsp -wadpath "$hldir" "$exported" "$bsp"
+rm -f "$exported"
 vis "$bsp"
 light "$bsp"

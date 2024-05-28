@@ -807,3 +807,11 @@
 ( -176 336 64 ) ( -176.78125000000003 343.8125 -64 ) ( -176 336 -64 ) measure64_03 [ 0 1 0 -96 ] [ 0 0 -1 0 ] 0 1 1
 }
 }
+// entity 13
+{
+"classname" "misc_external_map"
+"_external_map_angles" "-5 -90 0"
+"origin" "1160 136 40"
+"_external_map" "debug.inc.map"
+"_external_map_classname" "func_detail"
+}
