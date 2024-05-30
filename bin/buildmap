@@ -5,6 +5,19 @@ set -eux
 map="$1"
 bsp="$2"
 
+fast=0
+ent=0
+if [ $# -gt 2 ]; then
+    case "$3" in
+        -fast)
+            fast=1
+            ;;
+        -ent)
+            ent=1
+            ;;
+    esac
+fi
+
 # File suffixes and paths are fragile, there's some bad interactions between
 # tup and qbsp to avoid in order to get map includes to work.
 # I don't know how qbsp knows that included maps are in the mapssrc directory but it works.
@@ -12,7 +25,22 @@ exported="$1.exported.map"
 hldir="$(realpath "$(dirname "$0")"/../..)"
 
 goldutil map-export -cleanup-tb "$map" > "$exported"
+
+if [ $ent -eq 1 ]; then
+    qbsp -onlyents "$exported" "$bsp"
+    light -onlyents "$bsp"
+    rm -f "$exported"
+    return
+fi
+
 qbsp -nosoftware -leaktest -hlbsp -wadpath "$hldir" "$exported" "$bsp"
 rm -f "$exported"
-vis -noambient "$bsp"
-light "$bsp"
+
+if [ $fast -eq 1 ]; then
+    vis -noambient -fast "$bsp"
+    light -visapprox rays "$bsp"
+    return
+else
+    vis -noambient "$bsp"
+    light -extra4 "$bsp"
+fi

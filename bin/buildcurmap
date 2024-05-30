@@ -9,6 +9,6 @@ latest="$(find mapssrc -maxdepth 1 -type f -name '*.map' -printf "%T+ %p\n" | gr
 name="${latest%.*}"
 name="${name#mapssrc/}"
 
-bin/buildmap "$@" "$latest" "maps/$name.bsp"
+bin/buildmap "$latest" "maps/$name.bsp" "$@"
 bin/run +map "$name"
 )
