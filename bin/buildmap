@@ -33,7 +33,9 @@ if [ $ent -eq 1 ]; then
     return
 fi
 
-qbsp -nosoftware -leaktest -hlbsp -wadpath "$hldir" "$exported" "$bsp"
+qbsp -hlbsp -leaktest -wadpath "$hldir" \
+    -tjunc retopologize \
+    "$exported" "$bsp"
 rm -f "$exported"
 
 if [ $fast -eq 1 ]; then
