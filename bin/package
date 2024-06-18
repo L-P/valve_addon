@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+set -eux
+
+commit="$(git rev-parse --short HEAD)"
+
+case "$1" in
+    dm_solvent)
+        rm -f "dm_solvent_$commit.zip" || true
+        cp "maps/dm_solvent.bsp" "maps/dm_solvent_$commit.bsp"
+        zip  "dm_solvent_$commit.zip" "maps/dm_solvent_$commit.bsp" gfx/env/solvent*.tga
+        rm "maps/dm_solvent_$commit.bsp"
+        ;;
+    *)
+        exit 2
+esac
