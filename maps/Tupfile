@@ -1,1 +1,0 @@
-: foreach ../mapssrc/*.map ^.+\.inc\.map | ../*.wad |> ../bin/buildmap %f %B.bsp |> %B.bsp | %B.prt %B.log %B.texinfo.json %B-light.log %B-vis.log
