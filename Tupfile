@@ -1,9 +1,7 @@
 !quant = |> ^t^ pngquant --transbug -o %o %f |>
 
 : foreach wadsrc/prototype/*.png |> !quant |> wadsrc/prototype/quant/%b {prototype}
-: foreach wadsrc/solvent/*.png |> !quant |> wadsrc/solvent/quant/%b {solvent}
 
 : {prototype} |> goldutil wad create --out %o wadsrc/prototype/quant |> prototype.wad {wads}
-: {solvent} |> goldutil wad create --out %o wadsrc/solvent/quant |> solvent.wad {wads}
 
 : foreach mapssrc/*.map | {wads} |> bin/buildmap-ericw %f %o |> maps/%B.bsp | %O.prt
