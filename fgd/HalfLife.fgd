@@ -73,26 +73,10 @@
 
 @BaseClass = ZHLT
 [
-	zhlt_lightflags(choices) : "ZHLT Lightflags" : 0 =
-	[
-		0 : "Default"
-		1 : "Embedded Fix"
-		2 : "Opaque (blocks light)"
-		3 : "Opaque + Embedded fix"
-		6 : "Opaque + Concave Fix"
-	]
-	light_origin(string) : "Light Origin Target"
 ]
 
 @BaseClass = ZHLT_point
 [
-	_fade(string) : "ZHLT Fade" : "1.0"
-	_falloff(choices) : "ZHLT Falloff" : 0 =
-	[
-		0 : "Default"
-		1 : "Inverse Linear"
-		2 : "Inverse Square"
-	]
 ]
 
 @BaseClass = Appearflags
@@ -1462,9 +1446,8 @@
 	_minlight(string) : "Minimum light level"
 ]
 
-@SolidClass base(Targetname, Appearflags, RenderFields, Global, ZHLT) = func_wall : "Wall" 
+@SolidClass base(Targetname, Appearflags, RenderFields, Global, ModelBrush, ModelBrushLighting) = func_wall : "Wall" 
 [
-	_minlight(string) : "Minimum light level"
 ]
 
 @SolidClass base(func_wall) = func_wall_toggle : "Toggleable geometry" 

@@ -21,6 +21,11 @@
     _sunlight2_color(Color) : "Sunlight ambiant color" : : "Specifies the colour of _sunlight2, same format as '_sunlight_color'. Default is white light ('255 255 255')."
     _sunlight3(integer) : "Sun below horizon ambiant brightness" : : "Same as '_sunlight2', but for the bottom hemisphere (i.e. ambient light, coming from below the horizon). Combine '_sunlight2' and '_sunlight3' to have light coming equally from all directions, e.g. for levels floating in the clouds. Default 0."
     _sunlight3_color(Color) : "Sun below horizon ambiant color" : : "Specifies the colour of _sunlight3, same format as '_sunlight_color'. Default is white light ('255 255 255')."
+    _surflight_radiosity(Choices) : "Surface subdivision style" : : "Whether to use Q1-style surface subdivision (0) or Q2-style surface radiosity." =
+    [
+        0 : "Quake 1"
+        1 : "Quake 2 / GoldSrc"
+    ]
     _dirt(Choices) : "Ambiant occlusion" : : "1 enables dirtmapping (ambient occlusion) on all lights, borrowed from q3map2. This adds shadows to corners and crevices. You can override the global setting for specific lights with the '_dirt' light entitiy key or '_sunlight_dirt', '_sunlight2_dirt', and '_minlight_dirt' worldspawn keys. Default is no dirtmapping (-1)." =
     [
         -1 : "No"
@@ -145,7 +150,18 @@ Only supported on linear attenuation (delay 0) lights currently."
     _phong_angle_concave(integer) : "Phong concave angle" : : "Optional key for setting a different angle threshold for concave joints. A pair of faces will either use '_phong_angle' or '_phong_angle_concave' as the smoothing threshold, depending on whether the joint between the faces is concave or not. '_phong_angle(_concave)' is the maximum angle (in degrees) between the face normals that will still cause the pair of faces to be smoothed. The minimum setting for '_phong_angle_concave' is 1, this should make all concave joints non-smoothed (unless they’re less than 1 degree apart, almost a flat plane.) If it’s 0 or unset, the same value as '_phong_angle' is used."
 ]
 
-@BaseClass = ModelBrushLighting
+@BaseClass = ModelBrush
+[
+    _hulls(Flags) =
+    [
+        1 : "Hull 0 (point)" : 0
+        2 : "Hull 1 (human)" : 0
+        4 : "Hull 2 (large)" : 0
+        8 : "Hull 3 (crouched)" : 0
+    ]
+]
+
+@BaseClass base(WorldLighting) = ModelBrushLighting
 [
     _shadowself(Choices) : "Self shadow" : :  "If n is 1, this model will cast shadows on itself if one part of the model blocks the light from another model surface. This can be a better compromise for moving models than full shadowing. Default 0." =
     [
