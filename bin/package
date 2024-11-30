@@ -2,8 +2,23 @@
 
 set -eux
 
+hldir="$HOME/.steam/root/steamapps/common/Half-Life"
+mod="$(basename "$(realpath "$(dirname "$0")/..")")"
+
+remap() {
+    goldutil bsp remap-materials \
+        --original-materials="$hldir/valve/sound/materials.txt" \
+        --replacement-materials="$hldir/$mod/sound/makkon.materials.txt" \
+        --out "$hldir/$mod/maps/$1.remapped" \
+        --verbose \
+        "$1"
+
+    mv "$1.remapped" "$1"
+}
+
 case "$1" in
     dm_solvent)
+        remap dm_solvent
         rm -f "dm_solvent.zip" || true
         zip \
             "dm_solvent.zip" \
