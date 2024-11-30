@@ -1,6 +1,12 @@
+/*.tga
 /*.wad
 /*.zip
 /.tup
+/config.cfg
+/logos/remapped.bmp
 /maps/*
 /mapssrc/autosave
+/models/player/remapped.bmp
 /userconfig.cfg
+/voice_ban.dt
+/wadsrc/*/quant
