@@ -1,48 +1,64 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -eux
 
-map="$1"
-bsp="$2"
+hldir="$HOME/.steam/root/steamapps/common/Half-Life"
+bspdst="$2"
+mapsdir="$(basename "$(dirname "$bspdst")")"
+mkdir -p "$mapsdir"
+exported="$mapsdir/$(basename "$1")"
+mod="$(basename "$(realpath "$(dirname "$0")/..")")"
 
-fast=0
-ent=0
+goldutil map export --cleanup-tb "$1" > "$exported"
+sed -i -e 's/ SKIP / NULL /' "$exported"
+sed -i -e 's/"_illusionary" "1"/"zhlt_noclip" "1"/' "$exported"
+sed -i -e 's/"_shadow" "1"/"zhlt_lightflags" "2"/' "$exported"
+
+opts=(-noestimate -threads "$(nproc)")
+csgopts=("${opts[@]}" -clipeconomy -cliptype precise)
+bspopts=("${opts[@]}")
+visopts=("${opts[@]}" -full)
+radopts=("${opts[@]}" -chart -limiter 255 -rgbtransfers -customshadowwithbounce)
+
+bsp=1
+vis=1
+light=1
+
 if [ $# -gt 2 ]; then
     case "$3" in
         -fast)
-            fast=1
+            visopts+=(-fast)
+            lightopts+=(-fast)
             ;;
         -ent)
-            ent=1
+            csgopts+=(-onlyents)
+            bsp=0
+            vis=0
+            light=0
             ;;
     esac
-fi
-
-# File suffixes and paths are fragile, there's some bad interactions between
-# tup and qbsp to avoid in order to get map includes to work.
-# I don't know how qbsp knows that included maps are in the mapssrc directory but it works.
-exported="$1.exported.map"
-hldir="$(realpath "$(dirname "$0")"/../..)"
-
-goldutil map-export -cleanup-tb "$map" > "$exported"
-
-if [ $ent -eq 1 ]; then
-    qbsp -onlyents "$exported" "$bsp"
-    light -onlyents "$bsp"
-    rm -f "$exported"
-    return
-fi
-
-qbsp -hlbsp -leaktest -wadpath "$hldir" \
-    -tjunc retopologize \
-    "$exported" "$bsp"
-rm -f "$exported"
-
-if [ $fast -eq 1 ]; then
-    vis -noambient -fast "$bsp"
-    light -visapprox rays "$bsp"
-    return
 else
-    vis -noambient "$bsp"
-    light -extra4 "$bsp"
+    lightopts+=()
 fi
+
+(
+# Ensure we're in the real HL parent directory for this as compile tools look
+# for WADs relative to this path.
+cd "$hldir"
+
+sdHLCSG "${csgopts[@]}"  "$mod/$exported"
+
+if [ "$bsp" -eq 1 ]; then
+    sdHLBSP "${bspopts[@]}"  "$mod/$exported"
+fi
+
+if [ "$vis" -eq 1 ]; then
+    sdHLVIS "${visopts[@]}" "$mod/$exported"
+fi
+
+if [ "$light" -eq 1 ]; then
+    sdHLRAD "${radopts[@]}" "$mod/$exported"
+fi
+)
+
+rm "$exported"

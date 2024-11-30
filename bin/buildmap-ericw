@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -eux
+
+hldir="$HOME/.steam/root/steamapps/common/Half-Life"
+bsp="$2"
+mapsdir="$(basename "$(dirname "$2")")"
+mkdir -p "$mapsdir"
+exported="$mapsdir/$(basename "$1")"
+
+goldutil map export --cleanup-tb "$1" > "$exported"
+
+opts=(-nolog -nostat)
+qbspopts=("${opts[@]}" -hlbsp -leaktest -wadpath "$hldir" -tjunc retopologize -nosoftware -forcegoodtree -noextendedsurfflags)
+visopts=("${opts[@]}" -noambient)
+lightopts=("${opts[@]}")
+
+vis=1
+light=1
+
+if [ $# -gt 2 ]; then
+    case "$3" in
+        -fast)
+            visopts+=(-fast)
+            lightopts+=(-dirtdebug -dirtscale 2)
+            ;;
+        -ent)
+            qbspopts+=(-onlyents)
+            lightopts+=(-onlyents)
+            vis=0
+            ;;
+    esac
+else
+    lightopts+=(-extra4)
+fi
+
+qbsp "${qbspopts[@]}" "$exported" "$bsp"
+
+if [ "$vis" -eq 1 ]; then
+    vis "${visopts[@]}" "$bsp"
+fi
+
+if [ "$light" -eq 1 ]; then
+    light "${lightopts[@]}" "$bsp"
+fi
+
+rm "$exported"

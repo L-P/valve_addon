@@ -2,14 +2,18 @@
 
 set -eux
 
-commit="$(git rev-parse --short HEAD)"
-
 case "$1" in
     dm_solvent)
-        rm -f "dm_solvent_$commit.zip" || true
-        cp "maps/dm_solvent.bsp" "maps/dm_solvent_$commit.bsp"
-        zip  "dm_solvent_$commit.zip" "maps/dm_solvent_$commit.bsp" gfx/env/solvent*.tga
-        rm "maps/dm_solvent_$commit.bsp"
+        rm -f "dm_solvent.zip" || true
+        zip \
+            "dm_solvent.zip" \
+            "maps/dm_solvent.res" \
+            "maps/dm_solvent.readme.txt" \
+            "maps/dm_solvent.bsp" \
+            "mapssrc/dm_solvent.map" \
+            gfx/env/solvent*.tga \
+            sound/ambience/dm_solvent.wav \
+            sprites/dm_solvent/glow_wide_oriented.spr
         ;;
     *)
         exit 2
