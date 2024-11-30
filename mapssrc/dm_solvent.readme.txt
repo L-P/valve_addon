@@ -1,0 +1,12 @@
+Industrial themed open map for Half-Life: Deathmatch.
+
+Unzip under the `valve_addon` directory and allow custom addon content
+in the game settings.
+
+Compiled and lit using [https://ericwa.github.io/ericw-tools/|ericw-tools], built using [https://trenchbroom.github.io/|TrenchBroom].
+
+External assets:
+- [https://www.slipseer.com/index.php?resources/makkon-textures.28/|Textures by Ben "Makkon" Hale]
+- out_dirt1: CC0 [http://example.com/|ambientCG.com/a/Ground039]
+- sound/ambience/dm_solvent.wav: CC-BY-4.0 [https://freesound.org/people/klankbeeld/sounds/741606/|"muffed suburban morning 704 AM NL 220911_0528" by klankbeeld]
+- sprites/dm_solvent/glow_wide_oriented.spr by [https://www.moddb.com/mods/half-life-enriched/downloads/half-life-enriched-alpha-version-0885|Hezus]
