@@ -91,7 +91,7 @@ In this mode, 'wait' is ignored and 'light' only controls the brightness at the 
 
 Only supported on linear attenuation (delay 0) lights currently."
     _samples(integer) : "Deviance samples" : : "Number of lights to use for '_deviance'. Only used if '_deviance' is set."
-    delay(Choices) : "Attenuation formula" : 2 =
+    delay(Choices) : "Attenuation formula" : 1 =
     [
         0 : "Linear attenuation (default)"
         1 : "1/x attenuation"
@@ -120,6 +120,11 @@ Only supported on linear attenuation (delay 0) lights currently."
         4 : "Fast strobe"
         9 : "Slow strobe"
     ]
+
+     spawnflags(flags) =
+    [
+        1 : "Initially dark" : 0
+    ]
 ]
 
 // The following keys can be used on any entity with a brush model.
@@ -136,7 +141,7 @@ Only supported on linear attenuation (delay 0) lights currently."
         0 : "Disable"
         1 : "Enable"
     ]
-    _dirt(Choices) : "Ambiant occlusion" : : "-1 prevents dirtmapping on the brush model. Useful it the bmodel touches or sticks into the world, and you want to those ares from turning black. Default 0." = 
+    _dirt(Choices) : "Ambiant occlusion" : : "-1 prevents dirtmapping on the brush model. Useful it the bmodel touches or sticks into the world, and you want to those ares from turning black. Default 0." =
     [
         -1 : "Force disable"
         0 : "Use global defaults"
@@ -184,11 +189,11 @@ Only supported on linear attenuation (delay 0) lights currently."
     ]
 ]
 
-@PointClass base(BaseLight) = light
+@PointClass base(BaseLight) model({"path":"sprites/hammer/lightbulb.spr","scale":.25}) = light
 [
 ]
 
-@PointClass base(BaseLight) = light_spot
+@PointClass base(BaseLight) model({"path":"sprites/hammer/lightspot.spr","scale":.25}) = light_spot
 [
     mangle(string) : "Angles" : "0 -90 0" : "Turns the light into a spotlight and specifies the direction of light using yaw, pitch and roll in degrees. Yaw specifies the angle around the Z-axis from 0 to 359 degrees and pitch specifies the angle from 90 (straight up) to -90 (straight down). Roll has no effect, so use any value (e.g. 0). Often easier than the 'target' method."
     angle(integer) : "Outer cone" : 90 : "Specifies the angle in degrees for a spotlight cone."
@@ -234,6 +239,13 @@ _anglescale => _anglescale" =
 
 @SolidClass base(WorldLighting) = func_detail_illusionary : "func_detail variant with no collision (players / monsters / gunfire) and doesn’t split world faces. Doesn’t cast shadows unless enabled with '_shadow' '1'. Useful for hanging vines. Still creates BSP leafs, which is unavoidable without a new .bsp file format."
 [
+    _hulls(Flags) =
+    [
+        1 : "Hull 0 (point)" : 1
+        2 : "Hull 1 (human)" : 0
+        4 : "Hull 2 (large)" : 0
+        8 : "Hull 3 (crouched)" : 0
+    ]
 ]
 
 @SolidClass base(WorldLighting) = func_detail_wall : "func_detail variant that doesn’t split world faces. Useful for when you want a decoration touching a floor or wall to not split the floor/wall faces (you’ll get some overdraw instead.) If it completely covers up a world face, that face will get clipped away, so it’s not suitable for fence textures; see func_detail_fence instead."
