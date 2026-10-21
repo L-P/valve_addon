@@ -1,4 +1,7 @@
 # License
+- [mapssrc/*.map](mapssrc/)  
+  CC BY-NC-SA 4.0
+
 ## External
 - [wadsrc/prototype](./wadsrc/prototype):
     Subset of [prototype.wad](https://www.slipseer.com/index.php?resources/prototype-wad.263/) by khreathor.
