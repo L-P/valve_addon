@@ -11,25 +11,26 @@ remap() {
         --replacement-materials="$hldir/$mod/sound/makkon.materials.txt" \
         --out "$hldir/$mod/maps/$1.remapped" \
         --verbose \
-        "$1"
+        "maps/$1.bsp"
 
-    mv "$1.remapped" "$1"
+    mv "maps/$1.bsp" "maps/$1.bak"
+    mv "maps/$1.remapped" "maps/$1.bsp"
+    mv "maps/$1.bak" "maps/$1.bsp"
 }
 
-case "$1" in
-    dm_solvent)
-        remap dm_solvent
-        rm -f "dm_solvent.zip" || true
-        zip \
-            "dm_solvent.zip" \
-            "maps/dm_solvent.res" \
-            "maps/dm_solvent.readme.txt" \
-            "maps/dm_solvent.bsp" \
-            "mapssrc/dm_solvent.map" \
-            gfx/env/solvent*.tga \
-            sound/ambience/dm_solvent.wav \
-            sprites/dm_solvent/glow_wide_oriented.spr
-        ;;
-    *)
-        exit 2
-esac
+makepackage() {
+    remap "$1"
+    rm -f "$1.zip" || true
+    list="$(mktemp --suffix .list)"
+    cp "maps/$1.res" "$list"
+    (
+    echo "maps/$1.bsp"
+    echo "mapssrc/$1.map"
+    echo "maps/$1.res"
+    echo "maps/$1.readme.txt"
+    ) >> "$list"
+    zip "$1.zip" -@ < "$list"
+    rm -f "$list"
+}
+
+makepackage "$1"

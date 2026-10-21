@@ -2,8 +2,10 @@
 
 : foreach wadsrc/prototype/*.png |> !quant |> wadsrc/prototype/quant/%b {prototype}
 : foreach wadsrc/solvent/*.png |> !quant |> wadsrc/solvent/quant/%b {solvent}
+: foreach wadsrc/natrite/*.png |> !quant |> wadsrc/natrite/quant/%b {natrite}
 
-: {prototype} |> goldutil wad create --out %o wadsrc/prototype/quant |> prototype.wad {wads}
-: {solvent} |> goldutil wad create --out %o wadsrc/solvent/quant |> solvent.wad {wads}
+: {prototype} |> goldutil wad create --out %o %f |> prototype.wad {wads}
+: {solvent} |> goldutil wad create --out %o %f |> solvent.wad {wads}
+: {natrite} |> goldutil wad create --out %o %f |> natrite.wad {wads}
 
-: foreach mapssrc/*.map | {wads} |> bin/buildmap-ericw %f %o |> maps/%B.bsp | %O.prt
+: foreach mapssrc/*.map | {wads} |> bin/buildmap-ericw %f %o -f |> maps/%B.bsp | %O.prt %O.texinfo.json %O.content.json {bsps}

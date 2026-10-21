@@ -2,6 +2,7 @@
 /*.wad
 /*.zip
 /.tup
+/SAVE
 /config.cfg
 /logos/remapped.bmp
 /maps/*

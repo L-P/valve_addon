@@ -2,18 +2,25 @@
 
 set -eux
 
-hldir="$HOME/.steam/root/steamapps/common/Half-Life"
+hldir="$(realpath "$(dirname "$0")/../..")"
 bsp="$2"
 mapsdir="$(basename "$(dirname "$2")")"
 mkdir -p "$mapsdir"
 exported="$mapsdir/$(basename "$1")"
 
-goldutil map export --cleanup-tb "$1" > "$exported"
+goldutil map export --cleanup-tb "$1" | goldutil map neat > "$exported"
 
-opts=(-nolog -nostat)
-qbspopts=("${opts[@]}" -hlbsp -leaktest -wadpath "$hldir" -tjunc retopologize -nosoftware -forcegoodtree -noextendedsurfflags)
+opts=(-nolog -noverbose)
+qbspopts=("${opts[@]}" -hlbsp -leaktest -wadpath "$hldir" -tjunc retopologize -nosoftware -forcegoodtree -texturedefs texturedefs.def)
 visopts=("${opts[@]}" -noambient)
-lightopts=("${opts[@]}")
+
+# Is this a bug? light won't read the wad key we have to manually add paths.
+wads="$(sed -nE 's/"wad" "(.+)"/\1/p' "$exported" | tr ';' '\n' | sed "s|^|-path $hldir/|")"
+lightopts=(
+    "${opts[@]}"
+    $wads
+    -surflight_radiosity 1 -dirt 1 -bounce 1 -bouncestyled 1
+)
 
 vis=1
 light=1
@@ -31,7 +38,7 @@ if [ $# -gt 2 ]; then
             ;;
     esac
 else
-    lightopts+=(-extra4)
+    lightopts+=(-extra4 -gate 1.0)
 fi
 
 qbsp "${qbspopts[@]}" "$exported" "$bsp"
@@ -45,3 +52,14 @@ if [ "$light" -eq 1 ]; then
 fi
 
 rm "$exported"
+
+goldutil bsp remap-materials \
+    --original-materials="$hldir/valve/sound/materials.txt" \
+    --replacement-materials="sound/makkon.materials.txt" \
+    --out "$bsp.remapped" \
+    --verbose \
+    "$bsp"
+
+mv "$bsp.remapped" "$bsp"
+
+goldutil bsp limits "$bsp"

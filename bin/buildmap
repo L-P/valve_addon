@@ -7,7 +7,7 @@ bspdst="$2"
 mapsdir="$(basename "$(dirname "$bspdst")")"
 mkdir -p "$mapsdir"
 exported="$mapsdir/$(basename "$1")"
-mod="$(basename "$(realpath "$(dirname "$0")/..")")"
+mod="${HLMOD:=valve}"
 
 goldutil map export --cleanup-tb "$1" > "$exported"
 sed -i -e 's/ SKIP / NULL /' "$exported"
