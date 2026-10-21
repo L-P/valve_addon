@@ -18,3 +18,6 @@
 
 - [sprites/dm_solvent/glow_wide_oriented.spr](sprites/dm_solvent/glow_wide_oriented.spr) by Hezus  
   https://www.moddb.com/mods/half-life-enriched/downloads/half-life-enriched-alpha-version-0885
+
+- [wadsrc/natrite/peak.xcf](wadsrc/natrite/peak.xcf) by SrHerbii  
+  https://community.lambdageneration.com/half-life/post/bu6fkbigmf9
